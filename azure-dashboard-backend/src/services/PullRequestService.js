@@ -1,10 +1,5 @@
 const axios = require("../config/AxiosInstance");
 
-// class PullrequestService{
-
-//   constructor(){
-//     // this.project = [];
-//   }
 async function getPullRequests(project) {
   try {
     const response = await axios.get(
@@ -37,8 +32,8 @@ const extractFields = (jsonArray, project) => {
     creationDate: item.creationDate,
   }));
 };
-// }
 
 module.exports = {
   getPullRequests,
+  extractFields,
 };
