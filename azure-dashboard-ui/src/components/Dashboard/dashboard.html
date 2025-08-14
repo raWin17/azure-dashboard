@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Azure DevOps Dashboard</title>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+    />
+    <link rel="stylesheet" href="/src/dashboard.css" />
+    <style>
+      /* All styles moved to src/dashboard.css */
+    </style>
+  </head>
+  <body>
+    <div class="dashboard-container">
+      <div class="dashboard-title">Azure DevOps Dashboard</div>
+      <div class="dashboard-section">
+        <label for="project-select">Select Project</label><br />
+        <select id="project-select"></select>
+      </div>
+      <div class="dashboard-section">
+        <input id="repo-search" type="text" placeholder="Search Repositories" />
+      </div>
+      <div class="dashboard-section">
+        <input
+          id="inside-search"
+          type="text"
+          placeholder="Search inside repositories (e.g. Java 8)"
+        />
+        <div style="font-size: 0.9em; color: #888; margin-top: 4px">
+          Press Enter to search inside all listed repositories.
+        </div>
+      </div>
+      <div class="dashboard-section">
+        <div id="repo-list" class="dashboard-list"></div>
+      </div>
+      <div class="dashboard-section">
+        <div id="search-status"></div>
+        <div id="search-results"></div>
+        {searchResults.length > 0 && (
+        <div style="margin-top: 24px">
+          <h6>Search Results</h6>
+          <table class="dashboard-table">
+            <thead>
+              <tr>
+                <th>Repository</th>
+                <th>File</th>
+              </tr>
+            </thead>
+            <tbody>
+              {searchResults.map((result, idx) => (
+              <tr key="{idx}">
+                <td>{result.repo}</td>
+                <td>{result.file}</td>
+                <td>{result.line || '-'}</td>
+                <td><code>{result.text || '-'}</code></td>
+              </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        )}
+      </div>
+    </div>
+    <script>
+      // Placeholder: You need to connect this HTML to your React or JS logic for dynamic data.
+      // The IDs used here (project-select, repo-search, inside-search, repo-list, search-status, search-results) match the UI fields in your React app.
+    </script>
+  </body>
+</html>

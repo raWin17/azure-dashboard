@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pull Requests</title>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+    />
+    <link rel="stylesheet" href="ProjectAdvancedDetailsPage.css" />
+  </head>
+  <body>
+    <div class="dashboard-container">
+      <div class="tabs">
+        <button class="tab active" id="filter-tab" onclick="showTab('filter')">
+          Filter
+        </button>
+        <button class="tab" id="details-tab" onclick="showTab('details')">
+          Pull Requests
+        </button>
+      </div>
+      <div class="tab-content" id="filter-content">
+        <h3>Filter Projects</h3>
+        <input
+          type="text"
+          id="project-filter"
+          placeholder="Type to filter projects..."
+        />
+        <ul class="project-list" id="project-list"></ul>
+      </div>
+      <div class="tab-content" id="details-content" style="display: none">
+        <h3>Project Details</h3>
+        <div id="project-details">
+          <div class="details-section">
+            <span class="label">Project:</span>
+            <span id="details-project-name">-</span>
+          </div>
+          <div class="details-section">
+            <h4>Pull Requests</h4>
+            <table id="pull-request-table">
+              <thead>
+                <tr>
+                  <th>Title</th>
+                  <th>Description</th>
+                  <th>Created By</th>
+                  <th>Creation Date</th>
+                  <th>Link</th>
+                </tr>
+              </thead>
+              <tbody id="pull-request-list">
+                <tr>
+                  <td colspan="5">No pull requests found.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
