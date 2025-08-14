@@ -1,6 +1,6 @@
 const axios = require("axios");
 
-const AZURE_ORG = process.env.AZURE_ORG || "MetroBank";
+const AZURE_ORG = process.env.AZURE_ORG || "<YOUR_ORG_NAME>";
 const AZURE_PAT = process.env.AZURE_PAT || "";
 
 if (!AZURE_PAT) {
