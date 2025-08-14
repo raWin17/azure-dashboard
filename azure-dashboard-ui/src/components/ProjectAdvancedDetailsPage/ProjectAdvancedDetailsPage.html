@@ -1,0 +1,140 @@
+<!-- filepath: src/components/ProjectAdvancedDetailsPage.html -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Project Advanced Details</title>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+    />
+    <link rel="stylesheet" href="ProjectAdvancedDetailsPage.css" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="tabs">
+        <button class="tab active" id="filter-tab" onclick="showTab('filter')">
+          Filter
+        </button>
+        <button class="tab" id="details-tab" onclick="showTab('details')">
+          Project Details
+        </button>
+      </div>
+      <div class="tab-content" id="filter-content">
+        <h3>Filter Projects</h3>
+        <input
+          type="text"
+          id="project-filter"
+          placeholder="Type to filter projects..."
+        />
+        <ul class="project-list" id="project-list"></ul>
+      </div>
+      <div class="tab-content" id="details-content" style="display: none">
+        <h3>Project Details</h3>
+        <div id="project-details">
+          <div class="details-section">
+            <span class="label">Project:</span>
+            <span id="details-project-name">-</span>
+          </div>
+          <div class="details-section">
+            <h4>Dependencies</h4>
+            <ul class="dependency-list" id="details-dependencies">
+              <li>No dependencies found.</li>
+            </ul>
+          </div>
+          <div class="details-section">
+            <span class="label">Last Commit Date:</span>
+            <span id="details-last-commit">N/A</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      // Demo data for projects (replace with API calls in real app)
+      const projects = [
+        {
+          id: "proj1",
+          name: "Project Alpha",
+          dependencies: ["react", "axios"],
+          lastCommit: "2025-06-01",
+        },
+        {
+          id: "proj2",
+          name: "Project Beta",
+          dependencies: ["express", "mongoose"],
+          lastCommit: "2025-05-28",
+        },
+        {
+          id: "proj3",
+          name: "Project Gamma",
+          dependencies: [],
+          lastCommit: "2025-05-15",
+        },
+      ];
+      let selectedProject = null;
+
+      function showTab(tab) {
+        document.getElementById("filter-tab").classList.remove("active");
+        document.getElementById("details-tab").classList.remove("active");
+        document.getElementById("filter-content").style.display = "none";
+        document.getElementById("details-content").style.display = "none";
+        if (tab === "filter") {
+          document.getElementById("filter-tab").classList.add("active");
+          document.getElementById("filter-content").style.display = "";
+        } else {
+          document.getElementById("details-tab").classList.add("active");
+          document.getElementById("details-content").style.display = "";
+        }
+      }
+
+      function renderProjectList(filter = "") {
+        const list = document.getElementById("project-list");
+        list.innerHTML = "";
+        projects
+          .filter((p) => p.name.toLowerCase().includes(filter.toLowerCase()))
+          .forEach((project) => {
+            const li = document.createElement("li");
+            li.textContent = project.name;
+            li.onclick = () => showProjectDetails(project);
+            list.appendChild(li);
+          });
+      }
+
+      function showProjectDetails(project) {
+        selectedProject = project;
+        document.getElementById("details-project-name").textContent =
+          project.name;
+        const depList = document.getElementById("details-dependencies");
+        depList.innerHTML = "";
+        if (project.dependencies && project.dependencies.length > 0) {
+          project.dependencies.forEach((dep) => {
+            const li = document.createElement("li");
+            li.textContent = dep;
+            depList.appendChild(li);
+          });
+        } else {
+          const li = document.createElement("li");
+          li.textContent = "No dependencies found.";
+          depList.appendChild(li);
+        }
+        document.getElementById("details-last-commit").textContent =
+          project.lastCommit || "N/A";
+        showTab("details");
+      }
+
+      document
+        .getElementById("project-filter")
+        .addEventListener("input", function (e) {
+          renderProjectList(e.target.value);
+        });
+
+      // Initial render
+      renderProjectList();
+    </script>
+  </body>
+</html>
