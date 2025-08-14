@@ -21,7 +21,7 @@ This is a Node.js backend service using Express. It exposes an endpoint `/projec
    node index.js
    ```
    
-   - If you want to use .env file
+   - If you want to use .env file(please refer SAMPLE.env file)
      
      ```sh
      node --env-file=.env index.js
