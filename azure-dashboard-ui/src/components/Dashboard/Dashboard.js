@@ -83,7 +83,7 @@ const Dashboard = () => {
     setFilteredRepos(filtered);
   }, [query, repositories]);
 
-  const ORG_NAME = "MetroBank";
+  const ORG_NAME = "<YOUR_ORG_NAME>";
 
   const handleSearchInRepos = async () => {
     if (!selectedProject || !query || !searchTerm) {
