@@ -2,7 +2,7 @@ const {
   getPullRequests,
   extractFields,
 } = require("../../src/services/pullRequestService");
-const axios = require("../../src/config/AxiosInstance");
+const axios = require("../../src/config/axiosInstance");
 
 jest.mock("../../src/config/AxiosInstance");
 

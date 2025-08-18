@@ -1,4 +1,4 @@
-const axios = require("../config/AxiosInstance");
+const axios = require("../config/axiosInstance");
 
 async function getPullRequests(project) {
   try {

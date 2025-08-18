@@ -4,10 +4,10 @@ const {
   getRepositoryContents,
   searchCode,
 } = require("../../src/services/azureService");
-const axios = require("../../src/config/AxiosInstance");
+const axios = require("../../src/config/axiosInstance");
 const xml2js = require("xml2js");
 
-jest.mock("../../src/config/AxiosInstance");
+jest.mock("../../src/config/axiosInstance");
 
 jest.mock("xml2js", () => ({
   Parser: jest.fn(() => ({
