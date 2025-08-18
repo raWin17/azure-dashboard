@@ -1,6 +1,6 @@
 const axios = require("../config/axiosInstance");
 const xml2js = require("xml2js");
-
+const AZURE_ORG = process.env.AZURE_ORG || "<YOUR_ORG_NAME>";
 async function getProjects() {
   try {
     const response = await axios.get(`/_apis/projects?api-version=7.1`);
@@ -52,9 +52,9 @@ async function getRepositoryContents(project, repoName) {
   }
 }
 
-async function searchCode(org, project, searchText, repoName) {
+async function searchCode(project, searchText, repoName) {
   try {
-    const url = `https://almsearch.dev.azure.com/${org}/_apis/search/codesearchresults?api-version=7.1`;
+    const url = `https://almsearch.dev.azure.com/${AZURE_ORG}/_apis/search/codesearchresults?api-version=7.1`;
     const body = {
       searchText,
       $skip: 0,

@@ -168,7 +168,6 @@ describe("AzureService", () => {
   });
 
   describe("searchCode", () => {
-    const mockOrg = "my-org";
     const mockProject = "my-project";
     const mockSearchText = "searchTerm";
     const mockRepoName = "my-repo";
@@ -186,14 +185,13 @@ describe("AzureService", () => {
       axios.post.mockResolvedValueOnce({ data: mockSearchResults }); //
 
       const results = await searchCode(
-        mockOrg,
         mockProject,
         mockSearchText,
         mockRepoName
       );
 
       expect(axios.post).toHaveBeenCalledWith(
-        `https://almsearch.dev.azure.com/${mockOrg}/_apis/search/codesearchresults?api-version=7.1`,
+        `https://almsearch.dev.azure.com/TestOrg/_apis/search/codesearchresults?api-version=7.1`,
         {
           searchText: mockSearchText,
           $skip: 0,
@@ -213,10 +211,10 @@ describe("AzureService", () => {
       axios.post.mockRejectedValueOnce(mockError); //
 
       await expect(
-        searchCode(mockOrg, mockProject, mockSearchText, mockRepoName)
+        searchCode(mockProject, mockSearchText, mockRepoName)
       ).rejects.toThrow(mockError); //
       expect(axios.post).toHaveBeenCalledWith(
-        `https://almsearch.dev.azure.com/${mockOrg}/_apis/search/codesearchresults?api-version=7.1`,
+        `https://almsearch.dev.azure.com/TestOrg/_apis/search/codesearchresults?api-version=7.1`,
         {
           searchText: mockSearchText,
           $skip: 0,

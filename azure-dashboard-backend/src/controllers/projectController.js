@@ -37,8 +37,8 @@ async function getRepositoryContentsController(req, res) {
 
 async function searchCodeController(req, res) {
   try {
-    const { org, project, searchText, repoName } = req.body;
-    const data = await searchCode(org, project, searchText, repoName);
+    const { project, searchText, repoName } = req.body;
+    const data = await searchCode(project, searchText, repoName);
     res.json(data);
   } catch (error) {
     res.status(500).json({ error: error.message });

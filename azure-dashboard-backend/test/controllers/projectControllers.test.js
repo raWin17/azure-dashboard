@@ -148,7 +148,6 @@ describe("Azure DevOps Controllers", () => {
   // --- searchCodeController tests ---
   describe("searchCodeController", () => {
     const mockRequestBody = {
-      org: "myOrg",
       project: "myProject",
       searchText: "console.log",
       repoName: "myRepo",
@@ -171,7 +170,6 @@ describe("Azure DevOps Controllers", () => {
       expect(res.body).toEqual(mockSearchResults);
       expect(azureService.searchCode).toHaveBeenCalledTimes(1);
       expect(azureService.searchCode).toHaveBeenCalledWith(
-        mockRequestBody.org,
         mockRequestBody.project,
         mockRequestBody.searchText,
         mockRequestBody.repoName
@@ -188,7 +186,6 @@ describe("Azure DevOps Controllers", () => {
       expect(res.body).toEqual({ error: errorMessage });
       expect(azureService.searchCode).toHaveBeenCalledTimes(1);
       expect(azureService.searchCode).toHaveBeenCalledWith(
-        mockRequestBody.org,
         mockRequestBody.project,
         mockRequestBody.searchText,
         mockRequestBody.repoName

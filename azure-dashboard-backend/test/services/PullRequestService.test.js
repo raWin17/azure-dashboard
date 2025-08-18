@@ -4,7 +4,7 @@ const {
 } = require("../../src/services/pullRequestService");
 const axios = require("../../src/config/axiosInstance");
 
-jest.mock("../../src/config/AxiosInstance");
+jest.mock("../../src/config/axiosInstance");
 
 describe("AzureService", () => {
   const mockProject = "my-project";

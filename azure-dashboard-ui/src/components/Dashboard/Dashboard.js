@@ -83,8 +83,6 @@ const Dashboard = () => {
     setFilteredRepos(filtered);
   }, [query, repositories]);
 
-  const ORG_NAME = "<YOUR_ORG_NAME>";
-
   const handleSearchInRepos = async () => {
     if (!selectedProject || !query || !searchTerm) {
       setSearchError(
@@ -103,7 +101,6 @@ const Dashboard = () => {
         searchQuery = `${searchTerm} ${fileExtension}`.trim();
       }
       const codeSearchResults = await searchCode(
-        ORG_NAME,
         projectName,
         searchQuery,
         query
