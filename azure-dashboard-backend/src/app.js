@@ -9,7 +9,7 @@ const {
 } = require("./controllers/projectController");
 const {
   getPullRequestsController,
-} = require("./controllers/PullrequestController");
+} = require("./controllers/pullrequestController");
 
 const app = express();
 const port = process.env.PORT || 3000;
