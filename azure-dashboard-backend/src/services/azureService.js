@@ -1,7 +1,5 @@
+const axios = require("../config/axiosInstance");
 const xml2js = require("xml2js");
-const axios = require("../config/AxiosInstance");
-
-jest.mock("../config/AxiosInstance");
 
 async function getProjects() {
   try {
