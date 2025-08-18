@@ -1,4 +1,4 @@
-const axios = require("../config/AxiosInstance");
+const axios = require("../config/axiosInstance");
 const xml2js = require("xml2js");
 
 async function getProjects() {
@@ -90,9 +90,9 @@ const extractDependencies = async (xml) => {
     const parent = result.project.parent ? result.project.parent[0] : null;
     const parentArtifact = parent
       ? {
-          artifactId: parent.artifactId[0],
-          version: parent.version[0],
-        }
+        artifactId: parent.artifactId[0],
+        version: parent.version[0],
+      }
       : null;
 
     const dependencies = result.project.dependencies[0].dependency;
