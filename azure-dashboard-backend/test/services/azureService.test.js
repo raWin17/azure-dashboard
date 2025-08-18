@@ -7,10 +7,8 @@ const {
 const axios = require("../../src/config/AxiosInstance");
 const xml2js = require("xml2js");
 
-// Mock axios instance to control its behavior.
 jest.mock("../../src/config/AxiosInstance");
 
-// Mock xml2js to control XML parsing behavior.
 jest.mock("xml2js", () => ({
   Parser: jest.fn(() => ({
     parseStringPromise: jest.fn(),
@@ -19,7 +17,6 @@ jest.mock("xml2js", () => ({
 
 describe("AzureService", () => {
   beforeEach(() => {
-    // Reset all mocks before each test.
     jest.clearAllMocks();
   });
 

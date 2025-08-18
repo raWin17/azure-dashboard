@@ -26,6 +26,19 @@ app.get(
 app.post("/searchCode", searchCodeController);
 app.get("/projects/:project/pullRequests", getPullRequestsController);
 
-app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
+// app.listen(port, () => {
+//   console.log(`Server running on port ${port}`);
+// });
+
+if (require.main === module) {
+  const port = process.env.PORT || 3000;
+  app.listen(port, () => {
+    console.log(`Server running on port ${port}`);
+  });
+}
+
+app.get("/projects", (req, res) => {
+  res.status(200).send("OK");
 });
+module.exports = app;
+module.exports = app;
