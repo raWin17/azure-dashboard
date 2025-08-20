@@ -5,24 +5,24 @@ This is a Node.js backend service using Express. It exposes an endpoint `/projec
 ## Setup
 
 1. Install dependencies:
-   
+
    ```sh
    npm install
    ```
 
 2. Set the following environment variables in .env file:
-   
+
    - `AZURE_ORG`: Your Azure DevOps organisation name
    - `AZURE_PAT`: Your Azure DevOps Personal Access Token
 
 3. Start the server:
-   
+
    ```sh
    node index.js
    ```
-   
+
    - If you want to use .env file(please refer SAMPLE.env file)
-     
+
      ```sh
      node --env-file=.env index.js
      ```
