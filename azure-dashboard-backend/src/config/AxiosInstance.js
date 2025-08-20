@@ -8,6 +8,11 @@ if (!AZURE_PAT) {
     "Azure DevOps Personal Access Token (AZURE_PAT) is not set. Please set the AZURE_PAT environment variable."
   );
 }
+if (!AZURE_ORG) {
+  throw new Error(
+    "Azure DevOps Organization (AZURE_ORG) is not set. Please set the AZURE_ORG environment variable."
+  );
+}
 
 const instance = axios.create({
   baseURL: `https://dev.azure.com/${AZURE_ORG}`,

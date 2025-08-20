@@ -9,7 +9,7 @@ const {
 } = require("./controllers/projectController");
 const {
   getPullRequestsController,
-} = require("./controllers/PullrequestController");
+} = require("./controllers/pullrequestController");
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -29,3 +29,5 @@ app.get("/projects/:project/pullRequests", getPullRequestsController);
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
+
+module.exports = app;

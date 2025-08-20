@@ -21,7 +21,7 @@ This is a Node.js backend service using Express. It exposes an endpoint `/projec
    node index.js
    ```
    
-   - If you want to use .env file
+   - If you want to use .env file(please refer SAMPLE.env file)
      
      ```sh
      node --env-file=.env index.js
@@ -30,3 +30,7 @@ This is a Node.js backend service using Express. It exposes an endpoint `/projec
 ## Endpoint
 
 - `GET /projects`: Returns the list of projects from Azure DevOps.
+- `GET /projects/:project/repositories`: Return the list of repository under selected project
+- `GET /projects/:project/repositories/:repoName/contents`:  getRepositoryContentsController
+- `POST /searchCode`: Search across the organisation
+- `GET /projects/:project/pullRequests`: Fetch all the pull requests from the project

@@ -85,7 +85,7 @@ function Sidebar() {
             </ListItemIcon>
             <ListItemText primary="Repo Details" />
           </ListItem>
-          <ListItem
+          {/* <ListItem
             component={Link}
             to="/project/details"
             selected={location.pathname === "/project/details"}
@@ -105,7 +105,7 @@ function Sidebar() {
               <AssessmentIcon />
             </ListItemIcon>
             <ListItemText primary="Advanced Metrics" />
-          </ListItem>
+          </ListItem> */}
           <ListItem
             component={Link}
             to="/pullRequests"

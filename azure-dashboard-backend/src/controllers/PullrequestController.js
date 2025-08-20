@@ -1,4 +1,4 @@
-const { getPullRequests } = require("../services/PullRequestService");
+const { getPullRequests } = require("../services/pullRequestService");
 
 async function getPullRequestsController(req, res) {
   try {

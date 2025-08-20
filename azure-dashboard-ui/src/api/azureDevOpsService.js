@@ -29,11 +29,11 @@ export const getRepositoryContents = async (project, repoName) => {
   return res.json();
 };
 
-export const searchCode = async (org, project, searchText, repoName) => {
+export const searchCode = async (project, searchText, repoName) => {
   const res = await fetch(`${BACKEND_URL}/searchCode`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ org, project, searchText, repoName }),
+    body: JSON.stringify({ project, searchText, repoName }),
   });
   if (!res.ok) throw new Error("Failed to search code");
   return res.json();
