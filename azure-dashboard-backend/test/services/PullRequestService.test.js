@@ -51,7 +51,7 @@ describe("AzureService", () => {
 
   describe("getPullRequests", () => {
     test("should fetch active pull requests and extract fields", async () => {
-      axios.get.mockResolvedValueOnce({ data: { value: mockPullRequestData } }); //
+      axios.get.mockResolvedValueOnce({ data: { value: mockPullRequestData } });
 
       const result = await getPullRequests(mockProject);
 
@@ -66,7 +66,7 @@ describe("AzureService", () => {
       const mockError = new Error("Network Error");
       axios.get.mockRejectedValueOnce(mockError); //
 
-      await expect(getPullRequests(mockProject)).rejects.toThrow(mockError); //
+      await expect(getPullRequests(mockProject)).rejects.toThrow(mockError);
       expect(axios.get).toHaveBeenCalledTimes(1);
       expect(axios.get).toHaveBeenCalledWith(
         `/${mockProject}/_apis/git/pullrequests?searchCriteria.status=active`
