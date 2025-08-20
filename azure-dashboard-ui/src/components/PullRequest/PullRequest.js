@@ -18,7 +18,10 @@ import {
   TableRow,
   CircularProgress,
   Alert,
+  Button,
+  Grid,
 } from "@mui/material";
+import SendIcon from "@mui/icons-material/Send";
 
 const PullRequests = () => {
   const [projects, setProjects] = useState([]);
@@ -26,6 +29,8 @@ const PullRequests = () => {
   const [pullRequests, setPullRequests] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [statusValue, setStatusValue] = useState("");
+  const [showContent, setShowContent] = useState(false);
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -42,14 +47,15 @@ const PullRequests = () => {
     fetchProjects();
   }, []);
 
-  useEffect(() => {
-    if (selectedProject) {
+  const handleSubmit = () => {
+    setShowContent(true);
+    if ((selectedProject, statusValue)) {
       const fetchDetails = async () => {
         setLoading(true);
         setError("");
         setPullRequests([]);
         try {
-          const repos = await getPullRequests(selectedProject);
+          const repos = await getPullRequests(selectedProject, statusValue);
           setPullRequests(repos);
         } catch (err) {
           setError(err?.message || "Failed to load pull requests.");
@@ -61,7 +67,9 @@ const PullRequests = () => {
     } else {
       setPullRequests([]);
     }
-  }, [selectedProject]);
+  };
+
+  const isSubmitDisabled = !selectedProject || !statusValue;
 
   const trimDescription = (description, maxLength = 100) => {
     if (description && typeof description === "string") {
@@ -85,6 +93,8 @@ const PullRequests = () => {
             value={selectedProject}
             label="Select Project"
             onChange={(e) => {
+              setStatusValue("");
+              setShowContent(false);
               setSelectedProject(e.target.value);
             }}
           >
@@ -95,13 +105,38 @@ const PullRequests = () => {
             ))}
           </Select>
         </FormControl>
+        <FormControl fullWidth sx={{ mb: 2 }}>
+          <InputLabel>Select Status</InputLabel>
+          <Select
+            value={statusValue}
+            onChange={(e) => {
+              setShowContent(false);
+              setStatusValue(e.target.value);
+            }}
+            label="Select Status"
+          >
+            <MenuItem value="active">Active</MenuItem>
+            <MenuItem value="abandoned">Abandoned</MenuItem>
+            <MenuItem value="completed">Completed</MenuItem>
+          </Select>
+        </FormControl>
+        <Grid container justifyContent="flex-end">
+          <Button
+            variant="contained"
+            onClick={handleSubmit}
+            endIcon={<SendIcon />}
+            disabled={isSubmitDisabled}
+          >
+            Submit
+          </Button>
+        </Grid>
         {loading && (
           <Box display="flex" alignItems="center" justifyContent="center">
             <CircularProgress />
           </Box>
         )}
         {error && <Alert severity="error">{error}</Alert>}
-        {!loading && !error && selectedProject && (
+        {!loading && !error && selectedProject && showContent && (
           <TableContainer>
             <Table>
               <TableHead>

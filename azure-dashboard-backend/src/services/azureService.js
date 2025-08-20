@@ -48,6 +48,9 @@ async function getRepositoryContents(project, repoName) {
       "[AzureService] getRepositoryContents error:",
       error?.response?.data || error?.message || error
     );
+    if (error.response && error.response.status === 404) {
+      return { parent: null, dependencies: [] };
+    }
     throw error;
   }
 }

@@ -8,6 +8,7 @@ jest.mock("../../src/config/axiosInstance");
 
 describe("AzureService", () => {
   const mockProject = "my-project";
+  const mockStatus = "active";
   const mockPullRequestData = [
     {
       title: "PR 1",
@@ -53,11 +54,11 @@ describe("AzureService", () => {
     test("should fetch active pull requests and extract fields", async () => {
       axios.get.mockResolvedValueOnce({ data: { value: mockPullRequestData } });
 
-      const result = await getPullRequests(mockProject);
+      const result = await getPullRequests(mockProject, mockStatus);
 
       expect(axios.get).toHaveBeenCalledTimes(1);
       expect(axios.get).toHaveBeenCalledWith(
-        `/${mockProject}/_apis/git/pullrequests?searchCriteria.status=active`
+        `/${mockProject}/_apis/git/pullrequests?searchCriteria.status=${mockStatus}`
       );
       expect(result).toEqual(mockExtractedPullRequests);
     });
@@ -66,10 +67,12 @@ describe("AzureService", () => {
       const mockError = new Error("Network Error");
       axios.get.mockRejectedValueOnce(mockError); //
 
-      await expect(getPullRequests(mockProject)).rejects.toThrow(mockError);
+      await expect(getPullRequests(mockProject, mockStatus)).rejects.toThrow(
+        mockError
+      );
       expect(axios.get).toHaveBeenCalledTimes(1);
       expect(axios.get).toHaveBeenCalledWith(
-        `/${mockProject}/_apis/git/pullrequests?searchCriteria.status=active`
+        `/${mockProject}/_apis/git/pullrequests?searchCriteria.status=${mockStatus}`
       );
     });
   });

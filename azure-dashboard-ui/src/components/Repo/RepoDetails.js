@@ -85,7 +85,11 @@ const RepoDetails = () => {
             selectedProject,
             selectedRepo
           );
-          setDependenciesData(dependencies);
+          if (dependencies?.parent && dependencies?.dependencies) {
+            setDependenciesData(dependencies);
+          } else {
+            setError("No pom.xml found in main branch");
+          }
         } catch (err) {
           console.error("[RepoDetails] fetchDetails error:", err);
           setError("Failed to load repository details.");

@@ -24,7 +24,7 @@ import {
 } from "@mui/material";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import InfoIcon from "@mui/icons-material/Info";
-import AssessmentIcon from "@mui/icons-material/Assessment";
+// import AssessmentIcon from "@mui/icons-material/Assessment";
 import MergeIcon from "@mui/icons-material/Merge";
 
 const drawerWidth = 240;
