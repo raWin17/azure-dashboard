@@ -55,7 +55,7 @@ const PullRequests = () => {
         setError("");
         setPullRequests([]);
         try {
-          const repos = await getPullRequests(selectedProject);
+          const repos = await getPullRequests(selectedProject, statusValue);
           setPullRequests(repos);
         } catch (err) {
           setError(err?.message || "Failed to load pull requests.");

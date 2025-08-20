@@ -1,9 +1,9 @@
 const axios = require("../config/axiosInstance");
 
-async function getPullRequests(project) {
+async function getPullRequests(project, prStatus) {
   try {
     const response = await axios.get(
-      `/${project}/_apis/git/pullrequests?searchCriteria.status=active`
+      `/${project}/_apis/git/pullrequests?searchCriteria.status=${prStatus}`
     );
     const extractedData = extractFields(response.data.value, project);
     return extractedData;
