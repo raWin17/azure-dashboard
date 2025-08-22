@@ -6,6 +6,7 @@ async function getPullRequests(project, prStatus) {
       `/${project}/_apis/git/pullrequests?searchCriteria.status=${prStatus}`
     );
     const extractedData = extractFields(response.data.value, project);
+    console.log("extractedData", extractedData[0]);
     return extractedData;
   } catch (error) {
     console.error(
@@ -30,6 +31,11 @@ const extractFields = (jsonArray, project) => {
       item.pullRequestId,
     createdByDisplayName: item.createdBy.displayName,
     creationDate: item.creationDate,
+    completionDate: item.closedDate,
+    reviewers: item.reviewers
+      .map((reviewer) => reviewer.displayName)
+      .filter((name) => name && !name.includes("\\"))
+      .join(", "),
   }));
 };
 

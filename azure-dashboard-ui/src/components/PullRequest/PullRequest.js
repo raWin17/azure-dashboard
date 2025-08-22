@@ -136,49 +136,53 @@ const PullRequests = () => {
           </Box>
         )}
         {error && <Alert severity="error">{error}</Alert>}
-        {!loading && !error && selectedProject && showContent && (
-          <TableContainer>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell align="center" sx={{ fontWeight: "bold" }}>
-                    Title
-                  </TableCell>
-                  <TableCell align="center" sx={{ fontWeight: "bold" }}>
-                    Description
-                  </TableCell>
-                  <TableCell align="center" sx={{ fontWeight: "bold" }}>
-                    Created By
-                  </TableCell>
-                  <TableCell align="center" sx={{ fontWeight: "bold" }}>
-                    Creation Date
-                  </TableCell>
-                  {/* <TableCell align="center">Link</TableCell> */}
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {pullRequests.length > 0 ? (
-                  pullRequests.map((pr) => (
-                    <TableRow key={pr.prLink}>
-                      {/* <TableCell>{pr.title}</TableCell> */}
-                      <TableCell>
-                        <a
-                          href={pr.prLink}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          {pr.title}
-                        </a>
-                      </TableCell>
-                      <TableCell>
-                        {" "}
-                        {trimDescription(pr.description, 100)}
-                      </TableCell>
-                      <TableCell>{pr.createdByDisplayName}</TableCell>
-                      <TableCell>
-                        {new Date(pr.creationDate).toLocaleString()}
-                      </TableCell>
-                      {/* <TableCell>
+        {!loading &&
+          !error &&
+          selectedProject &&
+          showContent &&
+          statusValue !== "completed" && (
+            <TableContainer>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell align="center" sx={{ fontWeight: "bold" }}>
+                      Title
+                    </TableCell>
+                    <TableCell align="center" sx={{ fontWeight: "bold" }}>
+                      Description
+                    </TableCell>
+                    <TableCell align="center" sx={{ fontWeight: "bold" }}>
+                      Created By
+                    </TableCell>
+                    <TableCell align="center" sx={{ fontWeight: "bold" }}>
+                      Creation Date
+                    </TableCell>
+                    {/* <TableCell align="center">Link</TableCell> */}
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {pullRequests.length > 0 ? (
+                    pullRequests.map((pr) => (
+                      <TableRow key={pr.prLink}>
+                        {/* <TableCell>{pr.title}</TableCell> */}
+                        <TableCell>
+                          <a
+                            href={pr.prLink}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            {pr.title}
+                          </a>
+                        </TableCell>
+                        <TableCell>
+                          {" "}
+                          {trimDescription(pr.description, 100)}
+                        </TableCell>
+                        <TableCell>{pr.createdByDisplayName}</TableCell>
+                        <TableCell>
+                          {new Date(pr.creationDate).toLocaleString()}
+                        </TableCell>
+                        {/* <TableCell>
                         <a
                           href={pr.prLink}
                           target="_blank"
@@ -187,17 +191,87 @@ const PullRequests = () => {
                           View Pull Request
                         </a>
                       </TableCell> */}
+                      </TableRow>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={5}>No pull requests found.</TableCell>
                     </TableRow>
-                  ))
-                ) : (
+                  )}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          )}
+
+        {!loading &&
+          !error &&
+          selectedProject &&
+          showContent &&
+          statusValue === "completed" && (
+            <TableContainer>
+              <Table>
+                <TableHead>
                   <TableRow>
-                    <TableCell colSpan={5}>No pull requests found.</TableCell>
+                    <TableCell align="center" sx={{ fontWeight: "bold" }}>
+                      Title
+                    </TableCell>
+                    <TableCell align="center" sx={{ fontWeight: "bold" }}>
+                      Created By
+                    </TableCell>
+                    <TableCell align="center" sx={{ fontWeight: "bold" }}>
+                      Creation Date
+                    </TableCell>
+                    <TableCell align="center" sx={{ fontWeight: "bold" }}>
+                      Completion Date
+                    </TableCell>
+                    <TableCell align="center" sx={{ fontWeight: "bold" }}>
+                      Reviewers
+                    </TableCell>
+                    {/* <TableCell align="center">Link</TableCell> */}
                   </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        )}
+                </TableHead>
+                <TableBody>
+                  {pullRequests.length > 0 ? (
+                    pullRequests.map((pr) => (
+                      <TableRow key={pr.prLink}>
+                        {/* <TableCell>{pr.title}</TableCell> */}
+                        <TableCell>
+                          <a
+                            href={pr.prLink}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            {pr.title}
+                          </a>
+                        </TableCell>
+                        <TableCell>{pr.createdByDisplayName}</TableCell>
+                        <TableCell>
+                          {new Date(pr.creationDate).toLocaleString()}
+                        </TableCell>
+                        <TableCell>
+                          {new Date(pr.completionDate).toLocaleString()}
+                        </TableCell>
+                        <TableCell>{pr.reviewers}</TableCell>
+                        {/* <TableCell>
+                        <a
+                          href={pr.prLink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          View Pull Request
+                        </a>
+                      </TableCell> */}
+                      </TableRow>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={5}>No pull requests found.</TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          )}
       </Paper>
     </Container>
   );
