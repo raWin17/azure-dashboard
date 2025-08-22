@@ -9,6 +9,7 @@ jest.mock("../../src/config/axiosInstance");
 describe("AzureService", () => {
   const mockProject = "my-project";
   const mockStatus = "active";
+  const mockCompletedStatus = "completed";
   const mockPullRequestData = [
     {
       title: "PR 1",
@@ -91,9 +92,29 @@ describe("AzureService", () => {
       expect(result[0].creationDate).toEqual("2025-01-01T00:00:00Z");
     });
 
+    test("should fetch completed pull requests and extract fields", async () => {
+      axios.get.mockResolvedValueOnce({ data: { value: mockPullRequestData } });
+
+      const result = await getPullRequests(mockProject, mockCompletedStatus);
+
+      expect(axios.get).toHaveBeenCalledTimes(1);
+      expect(axios.get).toHaveBeenCalledWith(
+        `/${mockProject}/_apis/git/pullrequests?searchCriteria.status=${mockCompletedStatus}`
+      );
+      expect(result[0].title).toEqual("PR 1");
+      expect(result[0].description).toEqual("Description 1");
+      expect(result[0].prLink).toEqual(
+        "http://mock-base-url/my-project/_git/repo1/pullrequest/123"
+      );
+      expect(result[0].createdByDisplayName).toEqual("User 1");
+      expect(result[0].creationDate).toEqual("2025-01-01T00:00:00Z");
+      expect(result[0].createdByDisplayName).toEqual("User 1");
+      expect(result[0].creationDate).toEqual("2025-01-01T00:00:00Z");
+    });
+
     test("should handle API errors", async () => {
       const mockError = new Error("Network Error");
-      axios.get.mockRejectedValueOnce(mockError); //
+      axios.get.mockRejectedValueOnce(mockError);
 
       await expect(getPullRequests(mockProject, mockStatus)).rejects.toThrow(
         mockError
