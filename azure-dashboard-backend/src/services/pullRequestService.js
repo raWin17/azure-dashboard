@@ -6,7 +6,6 @@ async function getPullRequests(project, prStatus) {
       `/${project}/_apis/git/pullrequests?searchCriteria.status=${prStatus}`
     );
     const extractedData = extractFields(response.data.value, project);
-    console.log("extractedData", extractedData[0]);
     return extractedData;
   } catch (error) {
     console.error(
