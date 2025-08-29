@@ -10,6 +10,7 @@ const {
 const {
   getPullRequestsController,
 } = require("./controllers/pullrequestController");
+const { nlpSearchController } = require("./controllers/nlpSearchController");
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -25,7 +26,7 @@ app.get(
 );
 app.post("/searchCode", searchCodeController);
 app.get("/projects/:project/pullRequests", getPullRequestsController);
-
+app.post("/api/search-prs", nlpSearchController);
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });

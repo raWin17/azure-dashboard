@@ -20,8 +20,12 @@ import {
   Alert,
   Button,
   Grid,
+  FormGroup,
+  FormLabel,
 } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
+import dayjs from "dayjs";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 
 const PullRequests = () => {
   const [projects, setProjects] = useState([]);
@@ -81,6 +85,8 @@ const PullRequests = () => {
     return "No description available";
   };
 
+  const [value, setValue] = React.useState(dayjs("2022-04-17"));
+
   return (
     <Container maxWidth="lg" sx={{ mt: 4 }}>
       <Paper elevation={3} sx={{ p: 3 }}>
@@ -120,6 +126,21 @@ const PullRequests = () => {
             <MenuItem value="completed">Completed</MenuItem>
           </Select>
         </FormControl>
+        <FormGroup>
+          <FormLabel color="secondary" sx={{ mb: 2 }} component="legend">
+            Filter by
+          </FormLabel>
+          <FormControl sx={{ mb: 2 }}>
+            {/* <TextField
+              sx={{ mb: 2 }}
+              id="outlined-name"
+              label="Name"
+              variant="outlined"
+            /> */}
+            <DatePicker defaultValue={dayjs("2022-04-17")} />
+            <DatePicker defaultValue={dayjs("2022-04-17")} />
+          </FormControl>
+        </FormGroup>
         <Grid container justifyContent="flex-end">
           <Button
             variant="contained"
