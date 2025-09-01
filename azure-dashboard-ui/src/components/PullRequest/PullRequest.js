@@ -21,11 +21,15 @@ import {
   Button,
   Grid,
   FormGroup,
-  FormLabel,
+  FormControlLabel,
+  Switch,
+  TextField,
 } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import dayjs from "dayjs";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import "dayjs/locale/en-gb";
 
 const PullRequests = () => {
   const [projects, setProjects] = useState([]);
@@ -35,6 +39,10 @@ const PullRequests = () => {
   const [error, setError] = useState("");
   const [statusValue, setStatusValue] = useState("");
   const [showContent, setShowContent] = useState(false);
+  const [fromDate, setFromDate] = useState(dayjs());
+  const [toDate, setToDate] = useState(dayjs());
+  const [maxResults, setMaxResults] = React.useState("101");
+  const [isFilter, setIsFilter] = React.useState(false);
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -53,13 +61,28 @@ const PullRequests = () => {
 
   const handleSubmit = () => {
     setShowContent(true);
+    if (fromDate && toDate) {
+      console.log(
+        "Selected fromDate toISOString:",
+        fromDate.startOf("day").toISOString()
+      );
+      console.log(
+        "Selected To Date toISOString:",
+        toDate.endOf("day").toISOString()
+      );
+      console.log("Max Results:", maxResults);
+    }
     if ((selectedProject, statusValue)) {
       const fetchDetails = async () => {
         setLoading(true);
         setError("");
         setPullRequests([]);
         try {
-          const repos = await getPullRequests(selectedProject, statusValue);
+          const repos = await getPullRequests(
+            selectedProject,
+            statusValue,
+            maxResults
+          );
           setPullRequests(repos);
         } catch (err) {
           setError(err?.message || "Failed to load pull requests.");
@@ -73,7 +96,15 @@ const PullRequests = () => {
     }
   };
 
-  const isSubmitDisabled = !selectedProject || !statusValue;
+  const handleChange = (event) => {
+    setIsFilter(event.target.isFilter);
+    if (!isFilter) {
+      setFromDate(dayjs());
+      setToDate(dayjs());
+      setMaxResults("101");
+    }
+  };
+  const isDisabled = !selectedProject || !statusValue;
 
   const trimDescription = (description, maxLength = 100) => {
     if (description && typeof description === "string") {
@@ -84,8 +115,30 @@ const PullRequests = () => {
     }
     return "No description available";
   };
+  const handleMaxResultsChange = (v) => {
+    setMaxResults(v);
+  };
 
-  const [value, setValue] = React.useState(dayjs("2022-04-17"));
+  const onMaxResultsInput = (e) => {
+    const v = e.target.value;
+    // allow empty or digits only
+    if (v === "" || /^\d*$/.test(v)) {
+      handleMaxResultsChange(v);
+    }
+  };
+
+  const onMaxResultsBlur = () => {
+    if (maxResults === "") return;
+    let n = parseInt(maxResults, 10);
+    if (Number.isNaN(n)) return;
+    const min = 1;
+    const max = 1000;
+    if (n < min) n = min;
+    if (n > max) n = max;
+    setMaxResults(String(n));
+  };
+  // const invalidRange =
+  //   fromDate && toDate && dayjs(fromDate).isAfter(dayjs(toDate));
 
   return (
     <Container maxWidth="lg" sx={{ mt: 4 }}>
@@ -93,206 +146,272 @@ const PullRequests = () => {
         <Typography variant="h4" gutterBottom align="center" color="primary">
           Pull Requests
         </Typography>
-        <FormControl fullWidth sx={{ mb: 2 }}>
-          <InputLabel>Select Project</InputLabel>
-          <Select
-            value={selectedProject}
-            label="Select Project"
-            onChange={(e) => {
-              setStatusValue("");
-              setShowContent(false);
-              setSelectedProject(e.target.value);
-            }}
-          >
-            {projects.map((project) => (
-              <MenuItem key={project.id} value={project.id}>
-                {project.name}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        <FormControl fullWidth sx={{ mb: 2 }}>
-          <InputLabel>Select Status</InputLabel>
-          <Select
-            value={statusValue}
-            onChange={(e) => {
-              setShowContent(false);
-              setStatusValue(e.target.value);
-            }}
-            label="Select Status"
-          >
-            <MenuItem value="active">Active</MenuItem>
-            <MenuItem value="abandoned">Abandoned</MenuItem>
-            <MenuItem value="completed">Completed</MenuItem>
-          </Select>
-        </FormControl>
-        <FormGroup>
-          <FormLabel color="secondary" sx={{ mb: 2 }} component="legend">
-            Filter by
-          </FormLabel>
-          <FormControl sx={{ mb: 2 }}>
-            {/* <TextField
-              sx={{ mb: 2 }}
-              id="outlined-name"
-              label="Name"
-              variant="outlined"
-            /> */}
-            <DatePicker defaultValue={dayjs("2022-04-17")} />
-            <DatePicker defaultValue={dayjs("2022-04-17")} />
-          </FormControl>
-        </FormGroup>
-        <Grid container justifyContent="flex-end">
-          <Button
-            variant="contained"
-            onClick={handleSubmit}
-            endIcon={<SendIcon />}
-            disabled={isSubmitDisabled}
-          >
-            Submit
-          </Button>
-        </Grid>
-        {loading && (
-          <Box display="flex" alignItems="center" justifyContent="center">
-            <CircularProgress />
-          </Box>
-        )}
-        {error && <Alert severity="error">{error}</Alert>}
-        {!loading &&
-          !error &&
-          selectedProject &&
-          showContent &&
-          statusValue !== "completed" && (
-            <TableContainer>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell align="center" sx={{ fontWeight: "bold" }}>
-                      Title
-                    </TableCell>
-                    <TableCell align="center" sx={{ fontWeight: "bold" }}>
-                      Description
-                    </TableCell>
-                    <TableCell align="center" sx={{ fontWeight: "bold" }}>
-                      Created By
-                    </TableCell>
-                    <TableCell align="center" sx={{ fontWeight: "bold" }}>
-                      Creation Date
-                    </TableCell>
-                    {/* <TableCell align="center">Link</TableCell> */}
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {pullRequests.length > 0 ? (
-                    pullRequests.map((pr) => (
-                      <TableRow key={pr.prLink}>
-                        {/* <TableCell>{pr.title}</TableCell> */}
-                        <TableCell>
-                          <a
-                            href={pr.prLink}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            {pr.title}
-                          </a>
-                        </TableCell>
-                        <TableCell>
-                          {" "}
-                          {trimDescription(pr.description, 100)}
-                        </TableCell>
-                        <TableCell>{pr.createdByDisplayName}</TableCell>
-                        <TableCell>
-                          {new Date(pr.creationDate).toLocaleString()}
-                        </TableCell>
-                        {/* <TableCell>
-                        <a
-                          href={pr.prLink}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          View Pull Request
-                        </a>
-                      </TableCell> */}
-                      </TableRow>
-                    ))
-                  ) : (
-                    <TableRow>
-                      <TableCell colSpan={5}>No pull requests found.</TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          )}
 
-        {!loading &&
-          !error &&
-          selectedProject &&
-          showContent &&
-          statusValue === "completed" && (
-            <TableContainer>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell align="center" sx={{ fontWeight: "bold" }}>
-                      Title
-                    </TableCell>
-                    <TableCell align="center" sx={{ fontWeight: "bold" }}>
-                      Created By
-                    </TableCell>
-                    <TableCell align="center" sx={{ fontWeight: "bold" }}>
-                      Creation Date
-                    </TableCell>
-                    <TableCell align="center" sx={{ fontWeight: "bold" }}>
-                      Completion Date
-                    </TableCell>
-                    <TableCell align="center" sx={{ fontWeight: "bold" }}>
-                      Reviewers
-                    </TableCell>
-                    {/* <TableCell align="center">Link</TableCell> */}
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {pullRequests.length > 0 ? (
-                    pullRequests.map((pr) => (
-                      <TableRow key={pr.prLink}>
-                        {/* <TableCell>{pr.title}</TableCell> */}
-                        <TableCell>
-                          <a
-                            href={pr.prLink}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            {pr.title}
-                          </a>
+        <Grid container spacing={2}>
+          <Grid size={{ xs: 12, md: 6 }}>
+            <FormControl fullWidth>
+              <InputLabel>Select Project</InputLabel>
+              <Select
+                value={selectedProject}
+                label="Select Project"
+                onChange={(e) => {
+                  setStatusValue("");
+                  setShowContent(false);
+                  setSelectedProject(e.target.value);
+                }}
+              >
+                {projects.map((project) => (
+                  <MenuItem key={project.id} value={project.id}>
+                    {project.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
+
+          <Grid size={{ xs: 12, md: 6 }}>
+            <FormControl fullWidth>
+              <InputLabel>Select Status</InputLabel>
+              <Select
+                value={statusValue}
+                onChange={(e) => {
+                  setShowContent(false);
+                  setStatusValue(e.target.value);
+                }}
+                label="Select Status"
+              >
+                <MenuItem value="active">Active</MenuItem>
+                <MenuItem value="abandoned">Abandoned</MenuItem>
+                <MenuItem value="completed">Completed</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+
+          <Grid size={12}>
+            <FormGroup>
+              {/* <FormLabel
+                id="filter-by-label"
+                color="secondary"
+                sx={{ mb: 1 }}
+                component="legend"
+              >
+                Filter by
+              </FormLabel> */}
+              <Grid container sx={{ mb: 1 }}>
+                <FormControlLabel
+                  control={
+                    <Switch
+                      isFilter={isFilter}
+                      onChange={handleChange}
+                      slotProps={{ input: { "aria-label": "controlled" } }}
+                      disabled={isDisabled}
+                    />
+                  }
+                  label="Filter"
+                />
+              </Grid>
+              {isFilter && (
+                <Grid
+                  container
+                  spacing={2}
+                  sx={{
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <Grid size={{ xs: 12, sm: "auto" }}>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        gap: 2,
+                        alignItems: "center",
+                        flexWrap: "wrap",
+                      }}
+                    >
+                      <LocalizationProvider
+                        dateAdapter={AdapterDayjs}
+                        adapterLocale="en-gb"
+                      >
+                        <DatePicker
+                          label="From Date"
+                          disableFuture
+                          defaultValue={dayjs()}
+                          value={fromDate}
+                          onChange={(newValue) => setFromDate(newValue)}
+                        />
+                        <DatePicker
+                          label="To Date"
+                          disableFuture
+                          defaultValue={dayjs()}
+                          value={toDate}
+                          onChange={(newValue) => setToDate(newValue)}
+                        />
+                      </LocalizationProvider>
+                      <TextField
+                        label="Max Results"
+                        value={maxResults}
+                        onChange={onMaxResultsInput}
+                        onBlur={onMaxResultsBlur}
+                        type="text"
+                        inputMode="numeric"
+                        pattern="\d*"
+                        slotProps={{
+                          input: {
+                            inputMode: "numeric",
+                            pattern: "\\d*",
+                            min: 1,
+                            max: 1000,
+                          },
+                        }}
+                        helperText={maxResults === "" ? "" : ""}
+                      />
+                    </Box>
+                  </Grid>
+                </Grid>
+              )}
+            </FormGroup>
+          </Grid>
+
+          <Grid size={12} container justifyContent="flex-end">
+            <Button
+              variant="contained"
+              onClick={handleSubmit}
+              endIcon={<SendIcon />}
+              disabled={isDisabled}
+            >
+              Submit
+            </Button>
+          </Grid>
+
+          <Grid size={12}>
+            {loading && (
+              <Box display="flex" alignItems="center" justifyContent="center">
+                <CircularProgress />
+              </Box>
+            )}
+            {error && <Alert severity="error">{error}</Alert>}
+          </Grid>
+
+          <Grid size={12}>
+            {!loading &&
+              !error &&
+              selectedProject &&
+              showContent &&
+              statusValue !== "completed" && (
+                <TableContainer>
+                  <Table>
+                    <TableHead>
+                      <TableRow>
+                        <TableCell align="center" sx={{ fontWeight: "bold" }}>
+                          Title
                         </TableCell>
-                        <TableCell>{pr.createdByDisplayName}</TableCell>
-                        <TableCell>
-                          {new Date(pr.creationDate).toLocaleString()}
+                        <TableCell align="center" sx={{ fontWeight: "bold" }}>
+                          Description
                         </TableCell>
-                        <TableCell>
-                          {new Date(pr.completionDate).toLocaleString()}
+                        <TableCell align="center" sx={{ fontWeight: "bold" }}>
+                          Created By
                         </TableCell>
-                        <TableCell>{pr.reviewers}</TableCell>
-                        {/* <TableCell>
-                        <a
-                          href={pr.prLink}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          View Pull Request
-                        </a>
-                      </TableCell> */}
+                        <TableCell align="center" sx={{ fontWeight: "bold" }}>
+                          Creation Date
+                        </TableCell>
                       </TableRow>
-                    ))
-                  ) : (
-                    <TableRow>
-                      <TableCell colSpan={5}>No pull requests found.</TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          )}
+                    </TableHead>
+                    <TableBody>
+                      {pullRequests.length > 0 ? (
+                        pullRequests.map((pr) => (
+                          <TableRow key={pr.prLink}>
+                            <TableCell>
+                              <a
+                                href={pr.prLink}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                {pr.title}
+                              </a>
+                            </TableCell>
+                            <TableCell>
+                              {trimDescription(pr.description, 100)}
+                            </TableCell>
+                            <TableCell>{pr.createdByDisplayName}</TableCell>
+                            <TableCell>
+                              {new Date(pr.creationDate).toLocaleString()}
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      ) : (
+                        <TableRow>
+                          <TableCell colSpan={5}>
+                            No pull requests found.
+                          </TableCell>
+                        </TableRow>
+                      )}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              )}
+
+            {!loading &&
+              !error &&
+              selectedProject &&
+              showContent &&
+              statusValue === "completed" && (
+                <TableContainer>
+                  <Table>
+                    <TableHead>
+                      <TableRow>
+                        <TableCell align="center" sx={{ fontWeight: "bold" }}>
+                          Title
+                        </TableCell>
+                        <TableCell align="center" sx={{ fontWeight: "bold" }}>
+                          Created By
+                        </TableCell>
+                        <TableCell align="center" sx={{ fontWeight: "bold" }}>
+                          Creation Date
+                        </TableCell>
+                        <TableCell align="center" sx={{ fontWeight: "bold" }}>
+                          Completion Date
+                        </TableCell>
+                        <TableCell align="center" sx={{ fontWeight: "bold" }}>
+                          Reviewers
+                        </TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {pullRequests.length > 0 ? (
+                        pullRequests.map((pr) => (
+                          <TableRow key={pr.prLink}>
+                            <TableCell>
+                              <a
+                                href={pr.prLink}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                {pr.title}
+                              </a>
+                            </TableCell>
+                            <TableCell>{pr.createdByDisplayName}</TableCell>
+                            <TableCell>
+                              {new Date(pr.creationDate).toLocaleString()}
+                            </TableCell>
+                            <TableCell>
+                              {new Date(pr.completionDate).toLocaleString()}
+                            </TableCell>
+                            <TableCell>{pr.reviewers}</TableCell>
+                          </TableRow>
+                        ))
+                      ) : (
+                        <TableRow>
+                          <TableCell colSpan={5}>
+                            No pull requests found.
+                          </TableCell>
+                        </TableRow>
+                      )}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              )}
+          </Grid>
+        </Grid>
       </Paper>
     </Container>
   );

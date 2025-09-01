@@ -25,7 +25,7 @@ app.get(
   getRepositoryContentsController
 );
 app.post("/searchCode", searchCodeController);
-app.get("/projects/:project/pullRequests", getPullRequestsController);
+app.post("/pullrequests", getPullRequestsController);
 app.post("/api/search-prs", nlpSearchController);
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);

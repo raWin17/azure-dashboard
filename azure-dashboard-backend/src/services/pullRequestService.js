@@ -1,9 +1,9 @@
 const axios = require("../config/axiosInstance");
 
-async function getPullRequests(project, prStatus) {
+async function getPullRequests(project, prStatus, maxResults) {
   try {
     const response = await axios.get(
-      `/${project}/_apis/git/pullrequests?searchCriteria.status=${prStatus}`
+      `/${project}/_apis/git/pullrequests?searchCriteria.status=${prStatus}&$top=${maxResults}`
     );
     const extractedData = extractFields(response.data.value, project);
     return extractedData;
