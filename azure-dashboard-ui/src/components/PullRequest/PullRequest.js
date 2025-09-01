@@ -42,7 +42,7 @@ const PullRequests = () => {
   const [fromDate, setFromDate] = useState(dayjs());
   const [toDate, setToDate] = useState(dayjs());
   const [maxResults, setMaxResults] = useState("101");
-  const [isFilter, setIsFilter] = useState(false);
+  const [isFiltered, setIsFiltered] = useState(false);
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -97,8 +97,8 @@ const PullRequests = () => {
   };
 
   const handleChange = (event) => {
-    setIsFilter(event.target.checked);
-    if (isFilter) {
+    setIsFiltered(event.target.checked);
+    if (isFiltered) {
       setFromDate(dayjs());
       setToDate(dayjs());
       setMaxResults("101");
@@ -201,7 +201,7 @@ const PullRequests = () => {
                 <FormControlLabel
                   control={
                     <Switch
-                      checked={isFilter}
+                      checked={isFiltered}
                       onChange={handleChange}
                       slotProps={{ input: { "aria-label": "controlled" } }}
                       disabled={isDisabled}
@@ -210,7 +210,7 @@ const PullRequests = () => {
                   label="Filter"
                 />
               </Grid>
-              {isFilter && (
+              {isFiltered && (
                 <Grid
                   container
                   spacing={2}
