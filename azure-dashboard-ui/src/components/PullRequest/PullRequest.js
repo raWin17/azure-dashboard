@@ -58,10 +58,9 @@ const PullRequests = () => {
     };
     fetchProjects();
   }, []);
-
-  const handleSubmit = () => {
-    setShowContent(true);
-    if (fromDate && toDate) {
+  const buildGetPullRequestsParams = () => {
+    console.log("isFiltered:", isFiltered);
+    if (isFiltered && fromDate && toDate) {
       console.log(
         "Selected fromDate toISOString:",
         fromDate.startOf("day").toISOString()
@@ -70,18 +69,26 @@ const PullRequests = () => {
         "Selected To Date toISOString:",
         toDate.endOf("day").toISOString()
       );
+      return [
+        selectedProject,
+        statusValue,
+        maxResults,
+        fromDate.startOf("day").toISOString(),
+        toDate.endOf("day").toISOString(),
+      ];
+    } else {
+      return [selectedProject, statusValue];
     }
+  };
+  const handleSubmit = () => {
+    setShowContent(true);
     if ((selectedProject, statusValue)) {
       const fetchDetails = async () => {
         setLoading(true);
         setError("");
         setPullRequests([]);
         try {
-          const repos = await getPullRequests(
-            selectedProject,
-            statusValue,
-            maxResults
-          );
+          const repos = await getPullRequests(...buildGetPullRequestsParams());
           setPullRequests(repos);
         } catch (err) {
           setError(err?.message || "Failed to load pull requests.");
@@ -137,8 +144,6 @@ const PullRequests = () => {
     if (n > max) n = max;
     setMaxResults(String(n));
   };
-  // const invalidRange =
-  //   fromDate && toDate && dayjs(fromDate).isAfter(dayjs(toDate));
 
   const onFromDateChange = (date) => {
     setFromDate(date);

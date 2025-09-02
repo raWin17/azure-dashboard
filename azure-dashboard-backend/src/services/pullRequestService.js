@@ -1,9 +1,19 @@
 const axios = require("../config/axiosInstance");
 
-async function getPullRequests(project, prStatus, maxResults) {
+async function getPullRequests(
+  project,
+  prStatus,
+  maxResults,
+  minTime,
+  maxTime
+) {
   try {
+    console.log(
+      "URL: ",
+      `/_apis/git/pullrequests?searchCriteria.maxTime=${maxTime}&searchCriteria.minTime=${minTime}&searchCriteria.status=${prStatus}&$top=${maxResults}`
+    );
     const response = await axios.get(
-      `/${project}/_apis/git/pullrequests?searchCriteria.status=${prStatus}&$top=${maxResults}`
+      `/${project}/_apis/git/pullrequests?searchCriteria.maxTime=${maxTime}&searchCriteria.minTime=${minTime}&searchCriteria.status=${prStatus}&$top=${maxResults}`
     );
     const extractedData = extractFields(response.data.value, project);
     return extractedData;
