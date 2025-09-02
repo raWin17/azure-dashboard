@@ -70,7 +70,6 @@ const PullRequests = () => {
         "Selected To Date toISOString:",
         toDate.endOf("day").toISOString()
       );
-      console.log("Max Results:", maxResults);
     }
     if ((selectedProject, statusValue)) {
       const fetchDetails = async () => {
@@ -102,6 +101,7 @@ const PullRequests = () => {
       setFromDate(dayjs());
       setToDate(dayjs());
       setMaxResults("101");
+      setError("");
     }
   };
   const isDisabled = !selectedProject || !statusValue;
@@ -140,6 +140,27 @@ const PullRequests = () => {
   // const invalidRange =
   //   fromDate && toDate && dayjs(fromDate).isAfter(dayjs(toDate));
 
+  const onFromDateChange = (date) => {
+    setFromDate(date);
+    if (date && toDate && date.isAfter(toDate)) {
+      setError('The "From Date" cannot be after the "To Date".');
+    } else if (date?.isAfter(dayjs())) {
+      setError('The "From Date" cannot be in the future.');
+    } else {
+      setError("");
+    }
+  };
+
+  const onToDateChange = (date) => {
+    setToDate(date);
+    if (date && fromDate?.isAfter(date)) {
+      setError('The "From Date" cannot be after the "To Date".');
+    } else if (date?.isAfter(dayjs())) {
+      setError('The "To Date" cannot be in the future.');
+    } else {
+      setError("");
+    }
+  };
   return (
     <Container maxWidth="lg" sx={{ mt: 4 }}>
       <Paper elevation={3} sx={{ p: 3 }}>
@@ -211,63 +232,68 @@ const PullRequests = () => {
                 />
               </Grid>
               {isFiltered && (
-                <Grid
-                  container
-                  spacing={2}
-                  sx={{
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                >
-                  <Grid size={{ xs: 12, sm: "auto" }}>
-                    <Box
+                <Grid container spacing={2} alignItems="center" sx={{ mb: 2 }}>
+                  {/* <Grid container> */}
+                  {/* <Box
                       sx={{
                         display: "flex",
                         gap: 2,
                         alignItems: "center",
                         flexWrap: "wrap",
                       }}
-                    >
-                      <LocalizationProvider
-                        dateAdapter={AdapterDayjs}
-                        adapterLocale="en-gb"
-                      >
-                        <DatePicker
-                          label="From Date"
-                          disableFuture
-                          defaultValue={dayjs()}
-                          value={fromDate}
-                          onChange={(newValue) => setFromDate(newValue)}
-                        />
-                        <DatePicker
-                          label="To Date"
-                          disableFuture
-                          defaultValue={dayjs()}
-                          value={toDate}
-                          onChange={(newValue) => setToDate(newValue)}
-                        />
-                      </LocalizationProvider>
-                      <TextField
-                        label="Max Results"
-                        value={maxResults}
-                        onChange={onMaxResultsInput}
-                        onBlur={onMaxResultsBlur}
-                        type="text"
-                        inputMode="numeric"
-                        pattern="\d*"
-                        slotProps={{
-                          input: {
-                            inputMode: "numeric",
-                            pattern: "\\d*",
-                            min: 1,
-                            max: 1000,
-                          },
-                        }}
-                        helperText={maxResults === "" ? "" : ""}
+                    > */}
+                  <LocalizationProvider
+                    dateAdapter={AdapterDayjs}
+                    adapterLocale="en-gb"
+                  >
+                    <Grid size={4}>
+                      <DatePicker
+                        label="From Date"
+                        disableFuture
+                        defaultValue={dayjs()}
+                        value={fromDate}
+                        shouldDisableDate={(date) =>
+                          toDate ? date.isAfter(toDate) : false
+                        }
+                        onChange={onFromDateChange}
                       />
-                    </Box>
+                    </Grid>
+                    <Grid size={4}>
+                      <DatePicker
+                        label="To Date"
+                        disableFuture
+                        defaultValue={dayjs()}
+                        value={toDate}
+                        shouldDisableDate={(date) =>
+                          fromDate ? date.isBefore(fromDate) : false
+                        }
+                        onChange={onToDateChange}
+                      />
+                    </Grid>
+                  </LocalizationProvider>
+                  <Grid size={4}>
+                    <TextField
+                      label="Max Results"
+                      value={maxResults}
+                      onChange={onMaxResultsInput}
+                      onBlur={onMaxResultsBlur}
+                      type="text"
+                      inputMode="numeric"
+                      pattern="\d*"
+                      slotProps={{
+                        input: {
+                          inputMode: "numeric",
+                          pattern: "\\d*",
+                          min: 1,
+                          max: 1000,
+                        },
+                      }}
+                      // helperText={maxResults === "" ? "" : ""}
+                    />
                   </Grid>
+                  {/* </Box> */}
                 </Grid>
+                // </Grid>
               )}
             </FormGroup>
           </Grid>
@@ -277,7 +303,7 @@ const PullRequests = () => {
               variant="contained"
               onClick={handleSubmit}
               endIcon={<SendIcon />}
-              disabled={isDisabled}
+              disabled={isDisabled || error}
             >
               Submit
             </Button>
