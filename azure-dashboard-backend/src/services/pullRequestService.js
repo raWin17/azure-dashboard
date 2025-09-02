@@ -8,10 +8,6 @@ async function getPullRequests(
   maxTime
 ) {
   try {
-    console.log(
-      "URL: ",
-      `/_apis/git/pullrequests?searchCriteria.maxTime=${maxTime}&searchCriteria.minTime=${minTime}&searchCriteria.status=${prStatus}&$top=${maxResults}`
-    );
     const response = await axios.get(
       `/${project}/_apis/git/pullrequests?searchCriteria.maxTime=${maxTime}&searchCriteria.minTime=${minTime}&searchCriteria.status=${prStatus}&$top=${maxResults}`
     );
