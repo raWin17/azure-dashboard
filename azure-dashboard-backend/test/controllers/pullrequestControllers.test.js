@@ -14,7 +14,7 @@ const pullRequestService = require("../../src/services/pullRequestService");
 const app = express();
 app.use(express.json());
 
-app.get("/projects/:project/pullRequests", getPullRequestsController);
+app.post("/pullRequests", getPullRequestsController);
 describe("Azure DevOps Controllers", () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -22,13 +22,20 @@ describe("Azure DevOps Controllers", () => {
 
   // --- getPullRequestsController tests ---
   describe("getPullRequestsController", () => {
+    const mockRequestBody = {
+      project: "myProject",
+      prStatus: "active",
+      maxResults: 10,
+      minTime: "2023-01-01",
+      maxTime: "2023-12-31",
+    };
     it("should return a list of pull requests on success", async () => {
       const mockPullRequests = [{ id: "1", title: "Fix bug", status: "open" }];
       pullRequestService.getPullRequests.mockResolvedValue(mockPullRequests);
 
-      const response = await request(app).get(
-        "/projects/:project/pullRequests"
-      );
+      const response = await request(app)
+        .post("/pullRequests")
+        .send(mockRequestBody);
 
       expect(response.status).toBe(200);
       expect(response.body).toEqual(mockPullRequests);
@@ -38,9 +45,9 @@ describe("Azure DevOps Controllers", () => {
     it("should return an empty array if no pull requests are found", async () => {
       pullRequestService.getPullRequests.mockResolvedValue([]);
 
-      const response = await request(app).get(
-        "/projects/:project/pullRequests"
-      );
+      const response = await request(app)
+        .post("/pullRequests")
+        .send(mockRequestBody);
 
       expect(response.status).toBe(200);
       expect(response.body).toEqual([]);
@@ -53,9 +60,9 @@ describe("Azure DevOps Controllers", () => {
         new Error(errorMessage)
       );
 
-      const response = await request(app).get(
-        "/projects/:project/pullRequests"
-      );
+      const response = await request(app)
+        .post("/pullRequests")
+        .send(mockRequestBody);
 
       expect(response.status).toBe(500);
       expect(response.body).toEqual({ error: errorMessage });

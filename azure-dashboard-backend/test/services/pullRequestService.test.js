@@ -10,6 +10,9 @@ describe("AzureService", () => {
   const mockProject = "my-project";
   const mockStatus = "active";
   const mockCompletedStatus = "completed";
+  const mockMaxResults = 10;
+  const mockMinTime = "2025-09-02T22:59:59.999Z";
+  const mockMaxTime = "2025-10-02T23:00:00.000Z";
   const mockPullRequestData = [
     {
       title: "PR 1",
@@ -77,11 +80,17 @@ describe("AzureService", () => {
     test("should fetch active pull requests and extract fields", async () => {
       axios.get.mockResolvedValueOnce({ data: { value: mockPullRequestData } });
 
-      const result = await getPullRequests(mockProject, mockStatus);
+      const result = await getPullRequests(
+        mockProject,
+        mockStatus,
+        mockMaxResults,
+        mockMinTime,
+        mockMaxTime
+      );
 
       expect(axios.get).toHaveBeenCalledTimes(1);
       expect(axios.get).toHaveBeenCalledWith(
-        `/${mockProject}/_apis/git/pullrequests?searchCriteria.status=${mockStatus}`
+        `/${mockProject}/_apis/git/pullrequests?searchCriteria.maxTime=${mockMaxTime}&searchCriteria.minTime=${mockMinTime}&searchCriteria.status=${mockStatus}&$top=${mockMaxResults}`
       );
       expect(result[0].title).toEqual("PR 1");
       expect(result[0].description).toEqual("Description 1");
@@ -95,11 +104,17 @@ describe("AzureService", () => {
     test("should fetch completed pull requests and extract fields", async () => {
       axios.get.mockResolvedValueOnce({ data: { value: mockPullRequestData } });
 
-      const result = await getPullRequests(mockProject, mockCompletedStatus);
+      const result = await getPullRequests(
+        mockProject,
+        mockCompletedStatus,
+        mockMaxResults,
+        mockMinTime,
+        mockMaxTime
+      );
 
       expect(axios.get).toHaveBeenCalledTimes(1);
       expect(axios.get).toHaveBeenCalledWith(
-        `/${mockProject}/_apis/git/pullrequests?searchCriteria.status=${mockCompletedStatus}`
+        `/${mockProject}/_apis/git/pullrequests?searchCriteria.maxTime=${mockMaxTime}&searchCriteria.minTime=${mockMinTime}&searchCriteria.status=${mockCompletedStatus}&$top=${mockMaxResults}`
       );
       expect(result[0].title).toEqual("PR 1");
       expect(result[0].description).toEqual("Description 1");
@@ -116,12 +131,18 @@ describe("AzureService", () => {
       const mockError = new Error("Network Error");
       axios.get.mockRejectedValueOnce(mockError);
 
-      await expect(getPullRequests(mockProject, mockStatus)).rejects.toThrow(
-        mockError
-      );
+      await expect(
+        getPullRequests(
+          mockProject,
+          mockStatus,
+          mockMaxResults,
+          mockMinTime,
+          mockMaxTime
+        )
+      ).rejects.toThrow(mockError);
       expect(axios.get).toHaveBeenCalledTimes(1);
       expect(axios.get).toHaveBeenCalledWith(
-        `/${mockProject}/_apis/git/pullrequests?searchCriteria.status=${mockStatus}`
+        `/${mockProject}/_apis/git/pullrequests?searchCriteria.maxTime=${mockMaxTime}&searchCriteria.minTime=${mockMinTime}&searchCriteria.status=${mockStatus}&$top=${mockMaxResults}`
       );
     });
   });
