@@ -184,6 +184,7 @@ const PullRequests = () => {
                   setStatusValue("");
                   setShowContent(false);
                   setSelectedProject(e.target.value);
+                  setIsFiltered(false);
                 }}
               >
                 {projects.map((project) => (
