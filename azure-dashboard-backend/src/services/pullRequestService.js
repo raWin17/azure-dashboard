@@ -1,9 +1,15 @@
 const axios = require("../config/axiosInstance");
 
-async function getPullRequests(project, prStatus) {
+async function getPullRequests(
+  project,
+  prStatus,
+  maxResults,
+  minTime,
+  maxTime
+) {
   try {
     const response = await axios.get(
-      `/${project}/_apis/git/pullrequests?searchCriteria.status=${prStatus}`
+      `/${project}/_apis/git/pullrequests?searchCriteria.maxTime=${maxTime}&searchCriteria.minTime=${minTime}&searchCriteria.status=${prStatus}&$top=${maxResults}`
     );
     const extractedData = extractFields(response.data.value, project);
     return extractedData;
@@ -30,6 +36,11 @@ const extractFields = (jsonArray, project) => {
       item.pullRequestId,
     createdByDisplayName: item.createdBy.displayName,
     creationDate: item.creationDate,
+    completionDate: item.closedDate,
+    reviewers: item.reviewers
+      .map((reviewer) => reviewer.displayName)
+      .filter((name) => name && !name.includes("\\"))
+      .join(", "),
   }));
 };
 
