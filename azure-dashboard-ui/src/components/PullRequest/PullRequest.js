@@ -366,7 +366,9 @@ const PullRequests = () => {
                             </TableCell>
                             <TableCell>{pr.createdByDisplayName}</TableCell>
                             <TableCell>
-                              {new Date(pr.creationDate).toLocaleString()}
+                              {dayjs(pr.creationDate).format(
+                                "D MMM YYYY, h:mm A"
+                              )}
                             </TableCell>
                           </TableRow>
                         ))
@@ -423,10 +425,14 @@ const PullRequests = () => {
                             </TableCell>
                             <TableCell>{pr.createdByDisplayName}</TableCell>
                             <TableCell>
-                              {new Date(pr.creationDate).toLocaleString()}
+                              {dayjs(pr.creationDate).format(
+                                "D MMM YYYY, h:mm A"
+                              )}
                             </TableCell>
                             <TableCell>
-                              {new Date(pr.completionDate).toLocaleString()}
+                              {dayjs(pr.completionDate).format(
+                                "D MMM YYYY, h:mm A"
+                              )}
                             </TableCell>
                             <TableCell>{pr.reviewers}</TableCell>
                           </TableRow>
