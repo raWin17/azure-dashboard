@@ -10,12 +10,6 @@ import {
   Select,
   MenuItem,
   Box,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
   CircularProgress,
   Alert,
   Button,
@@ -24,11 +18,13 @@ import {
   FormControlLabel,
   Switch,
   TextField,
+  Link,
 } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
-import dayjs from "dayjs";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DataGrid } from "@mui/x-data-grid";
+import dayjs from "dayjs";
 import "dayjs/locale/en-gb";
 
 const PullRequests = () => {
@@ -166,6 +162,144 @@ const PullRequests = () => {
       setError("");
     }
   };
+  const applyRange = (start, end) => {
+    setIsFiltered(true);
+    setFromDate(start);
+    setToDate(end);
+    setError("");
+    // Auto-submit only when required selectors are chosen
+    if (selectedProject && statusValue) {
+      // ensure content shows and then fetch
+      setShowContent(true);
+      handleSubmit();
+    }
+  };
+  const monthToDate = () => {
+    const start = dayjs().startOf("month");
+    const end = dayjs();
+    applyRange(start, end);
+  };
+  const weekToDate = () => {
+    const start = dayjs().startOf("week");
+    const end = dayjs();
+    applyRange(start, end);
+  };
+
+  const lastWeek = () => {
+    // previous full calendar week (Sunday-Saturday)
+    const start = dayjs().startOf("week").subtract(1, "week");
+    const end = dayjs().startOf("week").subtract(1, "day");
+    applyRange(start, end);
+  };
+
+  const lastMonth = () => {
+    const start = dayjs().subtract(1, "month").startOf("month");
+    const end = dayjs().subtract(1, "month").endOf("month");
+    applyRange(start, end);
+  };
+
+  const columns = [
+    {
+      field: "title",
+      headerName: "Title",
+      headerAlign: "center",
+      align: "left",
+      flex: 1,
+      renderCell: (params) => (
+        <Link
+          href={params.row.prLink}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {params.value}
+        </Link>
+      ),
+    },
+    {
+      field: "description",
+      headerName: "Description",
+      headerAlign: "center",
+      flex: 1,
+      valueGetter: (value) => trimDescription(value, 100),
+    },
+    {
+      field: "createdByDisplayName",
+      headerName: "Created By",
+      headerAlign: "center",
+      flex: 0.6,
+    },
+    {
+      field: "creationDate",
+      headerName: "Creation Date",
+      headerAlign: "center",
+      flex: 0.65,
+      valueGetter: (value) => dayjs(value).format("D MMM YYYY, h:mm A"),
+    },
+  ];
+
+  const rows = pullRequests.map((pr, index) => ({
+    id: pr.prLink, // Use prLink as a unique identifier
+    title: pr.title,
+    prLink: pr.prLink,
+    description: pr.description,
+    createdByDisplayName: pr.createdByDisplayName,
+    creationDate: pr.creationDate,
+  }));
+
+  const columnsOfCompletedPR = [
+    {
+      field: "title",
+      headerName: "Title",
+      flex: 1,
+      headerAlign: "center",
+      renderCell: (params) => (
+        <Link
+          href={params.row.prLink}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {params.value}
+        </Link>
+      ),
+    },
+    {
+      field: "createdByDisplayName",
+      headerName: "Created By",
+      flex: 0.75,
+      headerAlign: "center",
+    },
+    {
+      field: "creationDate",
+      headerName: "Creation Date",
+      flex: 1,
+      headerAlign: "center",
+      valueGetter: (value) => dayjs(value).format("D MMM YYYY, h:mm A"), // Format the date
+    },
+    {
+      field: "completionDate",
+      headerName: "Completion Date",
+      flex: 1,
+      headerAlign: "center",
+      valueGetter: (value) => dayjs(value).format("D MMM YYYY, h:mm A"),
+    },
+    {
+      field: "reviewers",
+      headerName: "Reviewers",
+      flex: 1,
+      headerAlign: "center",
+    },
+  ];
+
+  const rowsOfCompletedPR = pullRequests.map((pr) => ({
+    id: pr.prLink, // Use prLink as a unique identifier
+    title: pr.title,
+    prLink: pr.prLink,
+    createdByDisplayName: pr.createdByDisplayName,
+    creationDate: pr.creationDate,
+    completionDate: pr.completionDate,
+    reviewers: pr.reviewers,
+  }));
+
   return (
     <Container maxWidth="lg" sx={{ mt: 4 }}>
       <Paper elevation={3} sx={{ p: 3 }}>
@@ -239,6 +373,24 @@ const PullRequests = () => {
               </Grid>
               {isFiltered && (
                 <Grid container spacing={2} alignItems="center" sx={{ mb: 2 }}>
+                  <Grid size={12}>
+                    <Link
+                      onClick={() => {
+                        monthToDate();
+                      }}
+                      underline="hover"
+                    >
+                      Month to Date
+                    </Link>
+                    <Link
+                      onClick={() => {
+                        weekToDate();
+                      }}
+                      underline="hover"
+                    >
+                      Month to Date
+                    </Link>
+                  </Grid>
                   {/* <Grid container> */}
                   {/* <Box
                       sx={{
@@ -330,58 +482,33 @@ const PullRequests = () => {
               selectedProject &&
               showContent &&
               statusValue !== "completed" && (
-                <TableContainer>
-                  <Table>
-                    <TableHead>
-                      <TableRow>
-                        <TableCell align="center" sx={{ fontWeight: "bold" }}>
-                          Title
-                        </TableCell>
-                        <TableCell align="center" sx={{ fontWeight: "bold" }}>
-                          Description
-                        </TableCell>
-                        <TableCell align="center" sx={{ fontWeight: "bold" }}>
-                          Created By
-                        </TableCell>
-                        <TableCell align="center" sx={{ fontWeight: "bold" }}>
-                          Creation Date
-                        </TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {pullRequests.length > 0 ? (
-                        pullRequests.map((pr) => (
-                          <TableRow key={pr.prLink}>
-                            <TableCell>
-                              <a
-                                href={pr.prLink}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                              >
-                                {pr.title}
-                              </a>
-                            </TableCell>
-                            <TableCell>
-                              {trimDescription(pr.description, 100)}
-                            </TableCell>
-                            <TableCell>{pr.createdByDisplayName}</TableCell>
-                            <TableCell>
-                              {dayjs(pr.creationDate).format(
-                                "D MMM YYYY, h:mm A"
-                              )}
-                            </TableCell>
-                          </TableRow>
-                        ))
-                      ) : (
-                        <TableRow>
-                          <TableCell colSpan={5}>
-                            No pull requests found.
-                          </TableCell>
-                        </TableRow>
-                      )}
-                    </TableBody>
-                  </Table>
-                </TableContainer>
+                <div style={{ height: 400, width: "100%" }}>
+                  {pullRequests.length > 0 ? (
+                    <DataGrid
+                      rows={rows}
+                      columns={columns}
+                      disableRowSelectionOnClick={true}
+                      showToolbar
+                      sx={{
+                        // Styling for the bold header text
+                        "& .MuiDataGrid-columnHeaderTitle": {
+                          fontWeight: "bold",
+                        },
+                        // Center the cell content for all columns
+                        "& .MuiDataGrid-cell": {
+                          textAlign: "center",
+                        },
+                      }}
+                      initialState={{
+                        pagination: {
+                          paginationModel: { page: 0, pageSize: 25 },
+                        },
+                      }}
+                    />
+                  ) : (
+                    <p>No pull requests found.</p>
+                  )}
+                </div>
               )}
 
             {!loading &&
@@ -389,64 +516,32 @@ const PullRequests = () => {
               selectedProject &&
               showContent &&
               statusValue === "completed" && (
-                <TableContainer>
-                  <Table>
-                    <TableHead>
-                      <TableRow>
-                        <TableCell align="center" sx={{ fontWeight: "bold" }}>
-                          Title
-                        </TableCell>
-                        <TableCell align="center" sx={{ fontWeight: "bold" }}>
-                          Created By
-                        </TableCell>
-                        <TableCell align="center" sx={{ fontWeight: "bold" }}>
-                          Creation Date
-                        </TableCell>
-                        <TableCell align="center" sx={{ fontWeight: "bold" }}>
-                          Completion Date
-                        </TableCell>
-                        <TableCell align="center" sx={{ fontWeight: "bold" }}>
-                          Reviewers
-                        </TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {pullRequests.length > 0 ? (
-                        pullRequests.map((pr) => (
-                          <TableRow key={pr.prLink}>
-                            <TableCell>
-                              <a
-                                href={pr.prLink}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                              >
-                                {pr.title}
-                              </a>
-                            </TableCell>
-                            <TableCell>{pr.createdByDisplayName}</TableCell>
-                            <TableCell>
-                              {dayjs(pr.creationDate).format(
-                                "D MMM YYYY, h:mm A"
-                              )}
-                            </TableCell>
-                            <TableCell>
-                              {dayjs(pr.completionDate).format(
-                                "D MMM YYYY, h:mm A"
-                              )}
-                            </TableCell>
-                            <TableCell>{pr.reviewers}</TableCell>
-                          </TableRow>
-                        ))
-                      ) : (
-                        <TableRow>
-                          <TableCell colSpan={5}>
-                            No pull requests found.
-                          </TableCell>
-                        </TableRow>
-                      )}
-                    </TableBody>
-                  </Table>
-                </TableContainer>
+                <div style={{ height: 400, width: "100%" }}>
+                  {pullRequests.length > 0 ? (
+                    <DataGrid
+                      rows={rowsOfCompletedPR}
+                      columns={columnsOfCompletedPR}
+                      showToolbar
+                      sx={{
+                        // Styling for the bold header text
+                        "& .MuiDataGrid-columnHeaderTitle": {
+                          fontWeight: "bold",
+                        },
+                        // Center the cell content for all columns
+                        "& .MuiDataGrid-cell": {
+                          textAlign: "center",
+                        },
+                      }}
+                      initialState={{
+                        pagination: {
+                          paginationModel: { page: 0, pageSize: 25 },
+                        },
+                      }}
+                    />
+                  ) : (
+                    <p>No pull requests found.</p>
+                  )}
+                </div>
               )}
           </Grid>
         </Grid>
