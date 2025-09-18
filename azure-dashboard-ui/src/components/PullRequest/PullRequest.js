@@ -6,9 +6,6 @@ import {
   Typography,
   Paper,
   FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
   Box,
   CircularProgress,
   Alert,
@@ -19,6 +16,7 @@ import {
   Switch,
   TextField,
   Link,
+  Autocomplete,
 } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
@@ -124,7 +122,6 @@ const PullRequests = () => {
 
   const onMaxResultsInput = (e) => {
     const v = e.target.value;
-    // allow empty or digits only
     if (v === "" || /^\d*$/.test(v)) {
       handleMaxResultsChange(v);
     }
@@ -167,9 +164,7 @@ const PullRequests = () => {
     setFromDate(start);
     setToDate(end);
     setError("");
-    // Auto-submit only when required selectors are chosen
     if (selectedProject && statusValue) {
-      // ensure content shows and then fetch
       setShowContent(true);
       handleSubmit();
     }
@@ -186,7 +181,6 @@ const PullRequests = () => {
   };
 
   const lastWeek = () => {
-    // previous full calendar week (Sunday-Saturday)
     const start = dayjs().startOf("week").subtract(1, "week");
     const end = dayjs().startOf("week").subtract(1, "day");
     applyRange(start, end);
@@ -238,7 +232,7 @@ const PullRequests = () => {
   ];
 
   const rows = pullRequests.map((pr, index) => ({
-    id: pr.prLink, // Use prLink as a unique identifier
+    id: pr.prLink,
     title: pr.title,
     prLink: pr.prLink,
     description: pr.description,
@@ -273,7 +267,7 @@ const PullRequests = () => {
       headerName: "Creation Date",
       flex: 1,
       headerAlign: "center",
-      valueGetter: (value) => dayjs(value).format("D MMM YYYY, h:mm A"), // Format the date
+      valueGetter: (value) => dayjs(value).format("D MMM YYYY, h:mm A"),
     },
     {
       field: "completionDate",
@@ -291,7 +285,7 @@ const PullRequests = () => {
   ];
 
   const rowsOfCompletedPR = pullRequests.map((pr) => ({
-    id: pr.prLink, // Use prLink as a unique identifier
+    id: pr.prLink,
     title: pr.title,
     prLink: pr.prLink,
     createdByDisplayName: pr.createdByDisplayName,
@@ -300,6 +294,11 @@ const PullRequests = () => {
     reviewers: pr.reviewers,
   }));
 
+  const statusOptions = [
+    { label: "Active", value: "active" },
+    { label: "Abandoned", value: "abandoned" },
+    { label: "Completed", value: "completed" },
+  ];
   return (
     <Container maxWidth="lg" sx={{ mt: 4 }}>
       <Paper elevation={3} sx={{ p: 3 }}>
@@ -310,54 +309,48 @@ const PullRequests = () => {
         <Grid container spacing={2}>
           <Grid size={{ xs: 12, md: 6 }}>
             <FormControl fullWidth>
-              <InputLabel>Select Project</InputLabel>
-              <Select
-                value={selectedProject}
-                label="Select Project"
-                onChange={(e) => {
+              <Autocomplete
+                options={projects}
+                getOptionLabel={(option) => option.name}
+                onChange={(event, newValue) => {
                   setStatusValue("");
                   setShowContent(false);
-                  setSelectedProject(e.target.value);
+                  setSelectedProject(newValue.name);
                   setIsFiltered(false);
                 }}
-              >
-                {projects.map((project) => (
-                  <MenuItem key={project.id} value={project.id}>
-                    {project.name}
-                  </MenuItem>
-                ))}
-              </Select>
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Select Project"
+                    variant="outlined"
+                  />
+                )}
+              />
             </FormControl>
           </Grid>
 
           <Grid size={{ xs: 12, md: 6 }}>
             <FormControl fullWidth>
-              <InputLabel>Select Status</InputLabel>
-              <Select
-                value={statusValue}
-                onChange={(e) => {
+              <Autocomplete
+                options={statusOptions}
+                getOptionLabel={(option) => option.label}
+                onChange={(event, newValue) => {
                   setShowContent(false);
-                  setStatusValue(e.target.value);
+                  setStatusValue(newValue.value);
                 }}
-                label="Select Status"
-              >
-                <MenuItem value="active">Active</MenuItem>
-                <MenuItem value="abandoned">Abandoned</MenuItem>
-                <MenuItem value="completed">Completed</MenuItem>
-              </Select>
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Select Status"
+                    variant="outlined"
+                  />
+                )}
+              />
             </FormControl>
           </Grid>
 
           <Grid size={12}>
             <FormGroup>
-              {/* <FormLabel
-                id="filter-by-label"
-                color="secondary"
-                sx={{ mb: 1 }}
-                component="legend"
-              >
-                Filter by
-              </FormLabel> */}
               <Grid container sx={{ mb: 1 }}>
                 <FormControlLabel
                   control={
@@ -391,15 +384,6 @@ const PullRequests = () => {
                       Month to Date
                     </Link>
                   </Grid>
-                  {/* <Grid container> */}
-                  {/* <Box
-                      sx={{
-                        display: "flex",
-                        gap: 2,
-                        alignItems: "center",
-                        flexWrap: "wrap",
-                      }}
-                    > */}
                   <LocalizationProvider
                     dateAdapter={AdapterDayjs}
                     adapterLocale="en-gb"
@@ -446,12 +430,9 @@ const PullRequests = () => {
                           max: 1000,
                         },
                       }}
-                      // helperText={maxResults === "" ? "" : ""}
                     />
                   </Grid>
-                  {/* </Box> */}
                 </Grid>
-                // </Grid>
               )}
             </FormGroup>
           </Grid>
@@ -482,7 +463,7 @@ const PullRequests = () => {
               selectedProject &&
               showContent &&
               statusValue !== "completed" && (
-                <div style={{ height: 400, width: "100%" }}>
+                <Box sx={{ mb: 2 }}>
                   {pullRequests.length > 0 ? (
                     <DataGrid
                       rows={rows}
@@ -490,11 +471,9 @@ const PullRequests = () => {
                       disableRowSelectionOnClick={true}
                       showToolbar
                       sx={{
-                        // Styling for the bold header text
                         "& .MuiDataGrid-columnHeaderTitle": {
                           fontWeight: "bold",
                         },
-                        // Center the cell content for all columns
                         "& .MuiDataGrid-cell": {
                           textAlign: "center",
                         },
@@ -508,7 +487,7 @@ const PullRequests = () => {
                   ) : (
                     <p>No pull requests found.</p>
                   )}
-                </div>
+                </Box>
               )}
 
             {!loading &&
@@ -516,18 +495,16 @@ const PullRequests = () => {
               selectedProject &&
               showContent &&
               statusValue === "completed" && (
-                <div style={{ height: 400, width: "100%" }}>
+                <Box sx={{ mb: 2 }}>
                   {pullRequests.length > 0 ? (
                     <DataGrid
                       rows={rowsOfCompletedPR}
                       columns={columnsOfCompletedPR}
                       showToolbar
                       sx={{
-                        // Styling for the bold header text
                         "& .MuiDataGrid-columnHeaderTitle": {
                           fontWeight: "bold",
                         },
-                        // Center the cell content for all columns
                         "& .MuiDataGrid-cell": {
                           textAlign: "center",
                         },
@@ -541,7 +518,7 @@ const PullRequests = () => {
                   ) : (
                     <p>No pull requests found.</p>
                   )}
-                </div>
+                </Box>
               )}
           </Grid>
         </Grid>
